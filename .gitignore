@@ -1,0 +1,28 @@
+# Virtual Environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
+
+# Model artifacts (optional if too large)
+*.pkl
+*.joblib
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
