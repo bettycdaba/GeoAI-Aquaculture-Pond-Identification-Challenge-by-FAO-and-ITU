@@ -12,7 +12,7 @@ The project follows professional machine learning and software engineering pract
 
 ## Project Structure
 
-(To be completed as the project develops.)
+
 
 ---
 
