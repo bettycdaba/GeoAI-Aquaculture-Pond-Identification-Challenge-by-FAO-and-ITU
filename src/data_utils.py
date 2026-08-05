@@ -19,24 +19,32 @@ def load_raw_test() -> pd.DataFrame:
     return pd.read_csv(TEST_RAW)
 
 
+def _is_missing(series: pd.Series) -> pd.Series:
+    """A value counts as missing whether it's still the raw -9999 sentinel
+    or has already been converted to NaN — lets these helpers work on raw
+    dataframes (straight from CSV) and on cleaned/augmented ones alike."""
+    return series.isna() | (series == MISSING_VALUE)
+
+
 def month_missing_matrix(df: pd.DataFrame, band: str = "VH") -> np.ndarray:
     """
     For a given indicator band (default VH, since S1 is present whenever a
     month is 'active' at all), return an (n_rows, 12) 0/1 matrix where 1
-    means that month is missing (-9999) for that row.
+    means that month is missing (either -9999 or NaN) for that row.
     """
     mat = np.zeros((len(df), len(MONTHS)), dtype=int)
     for mi, m in enumerate(MONTHS):
         col = band_month_col(band, m)
-        mat[:, mi] = (df[col] == MISSING_VALUE).astype(int)
+        mat[:, mi] = _is_missing(df[col]).astype(int)
     return mat
 
 def per_band_missing_rate(df: pd.DataFrame) -> pd.Series:
-    """Fraction of -9999 entries per band, averaged across all 12 months."""
+    """Fraction of missing (-9999 or NaN) entries per band, averaged across
+    all 12 months."""
     rates = {}
     for band in ALL_BANDS:
         cols = [band_month_col(band, m) for m in MONTHS]
-        rates[band] = (df[cols] == MISSING_VALUE).values.mean()
+        rates[band] = _is_missing(df[cols]).values.mean()
     return pd.Series(rates).sort_values(ascending=False)
 
 
